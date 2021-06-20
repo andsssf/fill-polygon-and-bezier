@@ -1,6 +1,7 @@
 #include <iostream>
 #include "GL/glew.h"
 #include "GL/freeglut.h"
+#include "BezierCurve/BezierCurve.h"
 
 using namespace std;
 
@@ -23,5 +24,10 @@ int main(int argc,char** argv) {
 }
 
 void render() {
+    glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(0, 0, 0, 0);
 
+    BezierCurve(Point(0, 0), Point(300, 300), Point(550, 400), Point(800, 100)).draw();
+
+	glFlush();
 }
