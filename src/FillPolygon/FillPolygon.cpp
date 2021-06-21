@@ -1,7 +1,5 @@
 #include "FillPolygon.h"
 #include "GL/glew.h"
-// #include <iostream>
-// using namespace std;
 
 void FillPolygon::draw() {
     init_ET();
@@ -16,7 +14,23 @@ void FillPolygon::draw() {
         fill(Y);
         Y++;
         update_AEL(Y);
+        if (checkET(Y) && checkAEL()) break;    // AEL表 和 ET表 均空时结束绘制
     }
+}
+
+bool FillPolygon::checkAEL() {
+    return AEL.next == nullptr;
+}
+
+bool FillPolygon::checkET(int y) {
+    bool result = true;
+    for (int i = y; i < 600; i++) {
+        if (ET[i].next != nullptr) {
+            result = false;
+            break;
+        }
+    }
+    return result;
 }
 
 void FillPolygon::update_AEL(int y) {
