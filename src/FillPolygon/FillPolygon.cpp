@@ -32,7 +32,6 @@ void FillPolygon::draw() {
 
 void FillPolygon::update_AEL(int y) {
     Edge *p = AEL, *old = AEL;
-    bool needSort = false;
     while (p != nullptr) {
         if (p->y_max == y) {
             if (p == AEL) {
@@ -47,7 +46,6 @@ void FillPolygon::update_AEL(int y) {
                 p = old->next;
                 delete temp;
             }
-            needSort = true;
         } else {
             p->x += p->delta_x;
             old = p;
@@ -55,7 +53,6 @@ void FillPolygon::update_AEL(int y) {
         }
         
     }
-    if (needSort) sort_AEL();
 }
 
 void FillPolygon::fill(int y) {
