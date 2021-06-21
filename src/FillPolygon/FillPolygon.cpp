@@ -5,23 +5,12 @@
 
 void FillPolygon::draw() {
     init_ET();
-    // for (int i = 0; i < 600; i++) {
-    //     if (ET[i] != nullptr) {
-    //         cout << i << " : ";
-    //         Edge *p = ET[i];
-    //         while(p != nullptr) {
-    //             cout << p->y_max << " " << p->x << " " << p->delta_x << " | ";
-    //             p = p->next;
-    //         }
-    //         cout << endl;
-    //     }
-    // }
     int Y = 0;
-    while (ET[Y] == nullptr) Y++;
+    while (ET[Y].next == nullptr) Y++;
     init_AEL();
     while(Y < 600) {
-        if (ET[Y] != nullptr) {
-            insert_AEL(ET[Y]);
+        if (ET[Y].next != nullptr) {
+            insert_AEL(ET[Y].next);
             delete_ET(Y);
         }
         fill(Y);
@@ -31,21 +20,13 @@ void FillPolygon::draw() {
 }
 
 void FillPolygon::update_AEL(int y) {
-    Edge *p = AEL, *old = AEL;
+    Edge *p = AEL.next, *old = &AEL;
     while (p != nullptr) {
         if (p->y_max == y) {
-            if (p == AEL) {
-                Edge *temp = p;
-                AEL = p->next;
-                old = AEL;
-                p = p->next;
-                delete temp;
-            } else {
-                Edge *temp = p;
-                old->next = p->next;
-                p = old->next;
-                delete temp;
-            }
+            Edge *temp = p;
+            old->next = p->next;
+            p = old->next;
+            delete temp;
         } else {
             p->x += p->delta_x;
             old = p;
@@ -56,7 +37,7 @@ void FillPolygon::update_AEL(int y) {
 }
 
 void FillPolygon::fill(int y) {
-    Edge *p = AEL;
+    Edge *p = AEL.next;
     glBegin(GL_LINES);
     glColor3f(FILL_POLYGON_COLOR);
     while(p != nullptr) {
@@ -70,9 +51,8 @@ void FillPolygon::fill(int y) {
 // 冒泡排序
 void FillPolygon::sort_AEL() {
     bool flag = true;
-    
     while (flag) {
-        Edge *p = AEL;
+        Edge *p = AEL.next;
         flag = false;
         while (p != nullptr && p->next != nullptr) {
             if (p->x > p->next->x || (p->x == p->next->x && p->delta_x > p->next->delta_x)) {
@@ -93,25 +73,28 @@ void FillPolygon::sort_AEL() {
 }
 
 void FillPolygon::insert_AEL(Edge *e) {
-    if (AEL == nullptr) AEL = e;
-    else {
-        Edge *p = AEL;
-        while (p->next != nullptr) p = p->next;
-        p->next = e;
-    }
+    Edge *p = &AEL;
+    while(p->next != nullptr) p = p->next;
+    p->next = e;
     sort_AEL();
 }
 
 void FillPolygon::init_AEL() {
-    AEL = nullptr;
+    Edge head;
+    head.next = nullptr;
+    AEL = head;
 }
 
 void FillPolygon::delete_ET(int y) {
-    ET[y] = nullptr;
+    ET[y].next = nullptr;
 }
 
 void FillPolygon::init_ET() {
-    for (int i = 0; i < 600; i++) ET[i] = nullptr;
+    for (int i = 0; i < 600; i++) {
+        Edge head;
+        head.next = nullptr;
+        ET[i] = head;
+    }
     for (int i = 0; i < points.size(); i++) {
         Point *p1, *p2;
         if (i != points.size() - 1) {
@@ -144,30 +127,17 @@ void FillPolygon::init_ET() {
 }
 
 void FillPolygon::insert_ET(int y, Edge *e) {
-    if (y < 0 || y > 600) return;
-    if (ET[y] == nullptr) {
-        ET[y] = e;
-        return;
-    } else {
-        Edge *p = ET[y];
-        Edge *temp = nullptr;
-        
-        while (e->x > p->x || (e->x == p->x && e->delta_x > p->delta_x)) {
-            if (p->next != nullptr) {
-                temp = p;
-                p = p->next;
-            }
-            else {
-                temp = p;
-                break;
-            }
-        }
-        if (temp == nullptr) {
-            e->next = ET[y];
-            ET[y] = e;
-        } else {
-            e->next = temp->next;
-            temp->next = e;
-        }
+    if (y < 0 || y >= 600) return;
+
+    Edge *p = ET[y].next;
+    Edge *old = &ET[y];
+    
+    while (p != nullptr && (e->x > p->x || (e->x == p->x && e->delta_x > p->delta_x))) {
+        old = p;
+        p = p->next;
     }
+
+    e->next = old->next;
+    old->next = e;
+
 }

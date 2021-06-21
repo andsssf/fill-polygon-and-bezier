@@ -25,8 +25,8 @@ class FillPolygon {
     void sort_AEL();
     void fill(int y);
     std::vector<Point> points;
-    Edge *ET[600];   //边分类表 窗口高度为600, 有600条扫描线。
-    Edge *AEL;      //活化边表（链表）
+    Edge ET[600];   //边分类表 窗口高度为600, 有600条扫描线。
+    Edge AEL;      //活化边表（链表）
 };
 
 
